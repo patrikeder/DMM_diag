@@ -1,0 +1,4 @@
+[Project]
+Name=DMM_Diag
+Manager=KDevCMakeManager
+VersionControl=kdevgit
