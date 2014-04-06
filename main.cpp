@@ -1,11 +1,14 @@
 #include <QtGui/QApplication>
-#include "DMM_Diag.h"
-
+#include "dmm_maindiag.h"
 
 int main(int argc, char** argv)
 {
+    DMM_MainDiag *DMM_Diag = 0;
     QApplication app(argc, argv);
-    DMM_Diag foo;
-    foo.show();
+    DMM_Diag = new DMM_MainDiag();
+    DMM_Diag->show();
     return app.exec();
 }
+
+
+
