@@ -2,6 +2,7 @@
 #define DMM_MainDiag_H
 
 #include "ui_dmm_maindiag.h"
+#include <QSignalMapper>
 
 class DMM_MainDiag : public QDialog
 {
@@ -18,13 +19,20 @@ private slots:
   void timer_task();
   void updateTimer();
   void getID();
+  void updateMSG();
+  void updateDBG();
+  void getMeasurement();
+  void setMeasurementType(QString type);
 //private signals:    
     
     
 private:
     Ui::DMM_MainDiag ui;
     void Instr_init();
-    void updateTE();
+    QString msg;
+    bool waitformeas;
+
+    QSignalMapper *signalMapper;
     
  };
 

@@ -24,40 +24,54 @@
 
 #define INTERFACE_SETTINGS
 
-enum eMeas {Volt,Curr,Freq,Cap,Res};
-enum eRes  {TREE,FOUR,FIFE};
-
-
-class M2550_access
+class M2550_access: public QObject
 {
+    Q_OBJECT
 public:
+    #define DBG_MSG_M sl_dbg_msg_m2550.append
+    #define ERR_MSG_M sl_err_msg_m2550.append
+
+
+    enum eMeas {Volt,Curr,Freq,Cap,Res};
+
+
     M2550_access(QString interface);
     ~M2550_access();
     bool isConnected();
     bool disconnect();
-    bool connect(QString interface);
+    int M2550_connect(QString interface);
     
-    bool setMeasurement(eMeas type);
-    bool setResolution(eRes res);
+    int setMeasurement(QString type="VOLT", QString DCnAC="DC");
+    int setResolution(int res=4);
+
+    int updateSettings();
+    int getSettings();
+
+    int getMeasurement();
 
     int getValue();
     
-    QString getIDN();
+    int getIDN();
     
     QStringList sl_dbg_msg_m2550;
     QStringList sl_err_msg_m2550;
+    QString sl_msg_m2550;
 
-
-private:
-    QString pr_interface;
-
-    bool connected;
-    Serial_Access *m2550_serial;
+private slots:
     void getMSG();
 
-    QString ccRange[2] = {"MAN","AUTO"};
-    QString ccMeasures[4] = {"VOLT","AMP","OHM","HERZ"};
-    //static const char *const eResolution
+signals:
+    void M2550_ack_received();
+
+private:
+    QString pr_interface,tSENS,tDCAC,tRES,tRANGE;
+
+    bool connected;
+    Serial_Access *m2550_serial;    
+
+    const QString ccRange[2] = {"MAN","AUTO"};
+    const QString ccMeasures[4] = {"VOLT","AMP","OHM","HERZ"};
+    const QString ccResolution = "6";
 
 };
 

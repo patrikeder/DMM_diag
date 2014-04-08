@@ -15,28 +15,51 @@
  *
  */
 
-#include <errno.h>
-#include <termios.h>
-#include <fcntl.h>
-#include "unistd.h"
 #include "serial_access.h"
+#include "QtExtSerialPort/qextserialport.h"
+#include <QtCore>
+#include <QDebug>
 
-#include <QtExtSerialPort/qextserialport.h>
 
-#define ERROR_MSG sl_err_msg.append
-#define DBG_MSG sl_dbg_msg.append
-
-Serial_Access::Serial_Access(QString interface, QString setting)
+Serial_Access::Serial_Access(QString interface)
 {
-  DBG_MSG("INTERFACE: DBG_EN");
-  ERROR_MSG("INTERFACE: ERR_EN");
-  if  (Serial_open(interface) >= 0) {
-        ser_connected = 1;
-        DBG_MSG("INTERFACE: connected");
+    int i_return = 0;
+    DBG_MSG_S("INTERFACE: DBG_EN");
+    ERR_MSG_S("INTERFACE: ERR_EN");
+    msg_available = false;
+    sl_msg.clear();
+    sl_dbg_msg.clear();
+    sl_err_msg.clear();
+
+    this->port = new QextSerialPort(interface,QextSerialPort::EventDriven);
+    port->setPortName(interface);
+    if (port->open(QIODevice::ReadWrite | QIODevice::Unbuffered)){
+        i_return = set_interface_attribs();//(*port,BAUD19200,PAR_NONE);
+        port->flush();
+        DBG_MSG_S("INTERFACE: created");
     }
     else {
-        ser_connected = 0;
-        DBG_MSG("INTERFACE: NOT connected");
+        // error code goes here
+        i_return = -1;
+        ERR_MSG_S("INTERFACE: create error");
+    }
+
+    if  (i_return >= 0) {
+        if (Serial_get_connected()){
+            if (QObject::connect(port, SIGNAL(readyRead()), this,SLOT(Serial_get())))
+            {
+                DBG_MSG_S("INTERFACE: connected");
+            }
+            else{
+                ERR_MSG_S("INTERFACE: signal NOT connected");
+            }
+        }
+        else {
+            ERR_MSG_S("INTERFACE: NOT open");
+        }
+    }
+    else{
+        ERR_MSG_S("INTERFACE: NOT available");
     }
 }
 
@@ -48,22 +71,21 @@ Serial_Access::~Serial_Access()
 
 int Serial_Access::Serial_send(QString cmd)
 {
-    DBG_MSG("INTERFACE: Write"+cmd);
-    int wordsWritten = write(fd_interface, cmd.toAscii()+"\n", sizeof(cmd.toAscii()));
+    cmd.append("\n");
+    DBG_MSG_S("INTERFACE: Write "+cmd);
+    port->write(cmd.toAscii());
     return 0;
 }
 
-QString Serial_Access::Serial_get(QString cmd,int bufSize)
+void Serial_Access::Serial_get()
 {
-    QString qs_return;
-    set_blocking(fd_interface,1);
-    Serial_send(cmd);
-    int wordsRead = read(fd_interface, qs_return.data_ptr(), bufSize);
-    
-    DBG_MSG("INTERFACE: GOT "+qs_return+" : "+QString::number(wordsRead)+" Words" );
-    set_blocking(fd_interface,1);
-
-    return qs_return;
+    QString qs_tmp;
+    if (port->bytesAvailable()) {           
+           qs_tmp = QString(port->readAll());
+        }
+    sl_msg.append(qs_tmp);    
+    msg_available = true;
+    emit Serial_received();
 }
 
 
@@ -71,29 +93,16 @@ int Serial_Access::Serial_open(QString pr_interface)
 {
     int i_return = 0;
 
-    fd_interface = open(
-                       // the name of the serial port
-                       // as a c-string (char *)
-                       // eg. /dev/ttys0
-                       pr_interface.toAscii(),
-                       // configuration options
-                       // O_RDWR - we need read
-                       //     and write access
-                       // O_CTTY - prevent other
-                       //     input (like keyboard)
-                       //     from affecting what we read
-                       // O_NDELAY - We don't care if
-                       //     the other side is
-                       //     connected (some devices
-                       //     don't explicitly connect)
-                       O_RDWR | O_NOCTTY | O_NDELAY
-                   );
-    if(fd_interface == -1) {
-        // error code goes here
-        i_return = -1;
+    this->port = new QextSerialPort(pr_interface,QextSerialPort::EventDriven);
+    port->setPortName(pr_interface);
+    if (port->open(QIODevice::ReadWrite | QIODevice::Unbuffered)){
+        i_return = set_interface_attribs();//(*port,BAUD19200,PAR_NONE);
+        DBG_MSG_S("INTERFACE: created");
     }
     else {
-        i_return = set_interface_attribs(fd_interface,B19200,0);
+        // error code goes here
+        i_return = -1;
+        ERR_MSG_S("INTERFACE: create error");
     }
     return i_return;
 
@@ -101,20 +110,19 @@ int Serial_Access::Serial_open(QString pr_interface)
 
 int Serial_Access::Serial_get_connected()
 {
-    return ser_connected;
+    return port->isOpen();
 }
+
 int Serial_Access::Serial_connect(QString pr_interface) {
     int i_return = 0;
 
     if  (Serial_open(pr_interface) >= 0) {
-        ser_connected = 1;
         i_return = 0;
-        DBG_MSG("INTERFACE: connected");
+        DBG_MSG_S("INTERFACE: connected");
     }
     else {
-        ser_connected = 0;
         i_return = -1;
-        DBG_MSG("INTERFACE: NOT connected");
+        ERR_MSG_S("INTERFACE: NOT connected");
     }
 
     return i_return;
@@ -123,9 +131,9 @@ int Serial_Access::Serial_connect(QString pr_interface) {
 
 int Serial_Access::Serial_disconnect()
 {
-    if (fd_interface > 0)
-        close(fd_interface);
-    DBG_MSG("INTERFACE: disconnected");
+    if (port->isOpen())
+        port->close();
+    DBG_MSG_S("INTERFACE: disconnected");
 
     return 0;
 }
@@ -133,65 +141,28 @@ int Serial_Access::Serial_disconnect()
 
 
 int
-Serial_Access::set_interface_attribs (int fd, int speed, int parity)
+Serial_Access::set_interface_attribs ()//QextSerialPort &fd, BaudRateType speed, ParityType parity)
 {
-    struct termios tty;
-    memset (&tty, 0, sizeof tty);
-    if (tcgetattr (fd, &tty) != 0)
-    {
-        ERROR_MSG(QString::fromStdString("error from tcgetattr"));
-        return -1;
-    }
 
-    cfsetospeed (&tty, speed);
-    cfsetispeed (&tty, speed);
-
-    tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
-    // disable IGNBRK for mismatched speed tests; otherwise receive break
-    // as \000 chars
-    tty.c_iflag &= ~IGNBRK;         // ignore break signal
-    tty.c_lflag = 0;                // no signaling chars, no echo,
-    // no canonical processing
-    tty.c_oflag = 0;                // no remapping, no delays
-    tty.c_cc[VMIN]  = 0;            // read doesn't block
-    tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-    tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
-
-    tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
-    // enable reading
-    tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
-    tty.c_cflag |= parity;
-    tty.c_cflag &= ~CSTOPB;
-    tty.c_cflag &= ~CRTSCTS;
-
-    if (tcsetattr (fd, TCSANOW, &tty) != 0)
-    {
-        ERROR_MSG (QString("error from tcsetattr"));
-        return -1;
-    }
+    port->setBaudRate(BAUD19200);
+    port->setFlowControl(FLOW_OFF);
+    port->setParity(PAR_NONE);
+    port->setDataBits(DATA_8);
+    port->setStopBits(STOP_1);
     return 0;
 }
 
 int
-Serial_Access::set_blocking (int fd, int should_block)
+Serial_Access::set_blocking (QextSerialPort fd, int should_block)
 {
-    struct termios tty;
-    memset (&tty, 0, sizeof tty);
-    if (tcgetattr (fd, &tty) != 0)
-    {
-        ERROR_MSG(QString("error from tggetattr"));
-        return -1;
-    }
 
-    tty.c_cc[VMIN]  = should_block ? 1 : 0;
-    tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-    if (tcsetattr (fd, TCSANOW, &tty) != 0) {
-        ERROR_MSG(QString("error setting term attributes"));
-        return -2;
-    }
-    else {
-        return 0;
-    }
 }
+
+bool Serial_Access::Serial_get_ready(){
+    return msg_available;
+}
+
+void Serial_Access::Serial_reset_ready(){
+    msg_available = false;
+}
+

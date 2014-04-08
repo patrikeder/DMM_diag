@@ -8,7 +8,7 @@ find_package(Qt4 REQUIRED)
 #set(DMM_Diag_HEADERS dmm_maindiag.h rigol_access.h)
 
 set(DMM_Diag_SRCS Serial/serial_access.cpp M2550/m2550_access.cpp main.cpp dmm_maindiag.cpp)
-set(DMM_Diag_HEADERS dmm_maindiag.h M2550/m2550_access.h)
+set(DMM_Diag_HEADERS dmm_maindiag.h M2550/m2550_access.h Serial/serial_access.h)
 
 
 SET(DMM_Diag_FORMS dmm_maindiag.ui)
@@ -31,6 +31,6 @@ add_executable(DMM_Diag ${DMM_Diag_SRCS}
     ${DMM_Diag_RESOURCES_RCC}
 )
     
-target_link_libraries(DMM_Diag ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_LIBRARIES} qwt)
+target_link_libraries(DMM_Diag ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_LIBRARIES} qwt qextserialport)
 
 install(TARGETS DMM_Diag RUNTIME DESTINATION bin)

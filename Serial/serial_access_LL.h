@@ -18,49 +18,31 @@
 #ifndef SERIAL_ACCESS_H
 #define SERIAL_ACCESS_H
 
-#include <QSignalMapper>
 #include <QString>
 #include <QStringList>
-#include <QtExtSerialPort/qextserialport.h>
 
-class Serial_Access: public QObject
+class Serial_Access_LL
 {
-    Q_OBJECT
-#define ERR_MSG_S sl_err_msg.append
-#define DBG_MSG_S sl_dbg_msg.append
-
-
 public:
-  Serial_Access(QString interface);
-  ~Serial_Access();
+  Serial_Access_LL(QString interface, QString setting = "none");
+  ~Serial_Access_LL();
   
   int Serial_send(QString cmd);
-
+  QString Serial_get(QString cmd,int bufSize);
   
   int Serial_get_connected();
-  bool Serial_get_ready();
-  void Serial_reset_ready();
   int Serial_disconnect();
   int Serial_connect(QString pr_interface);
   
-  QStringList sl_dbg_msg; //DEBUG buffer
-  QStringList sl_err_msg; //ERRor Buffer
-  QStringList sl_msg; //Messages
-
-signals:
-  void Serial_received();
-
-private slots:
-  void Serial_get();
-
+  QStringList sl_dbg_msg;
+  QStringList sl_err_msg;
+  
 private:
-  bool msg_available; // TODO: to be replaced by signal/mutex
-
   int Serial_open(QString interface);
-  QextSerialPort *port;
-  int ser_connected;
-  int set_interface_attribs ();//QextSerialPort &fd, BaudRateType speed, ParityType parity);
-  int set_blocking (QextSerialPort fd, int should_block);
+  int fd_interface;
+    int ser_connected;
+  int set_interface_attribs (int fd, int speed, int parity);
+  int set_blocking (int fd, int should_block);
   
 };
 
