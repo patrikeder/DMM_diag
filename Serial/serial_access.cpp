@@ -18,7 +18,7 @@
 #include "serial_access.h"
 #include "QtExtSerialPort/qextserialport.h"
 #include <QtCore>
-#include <QDebug>
+//#include <QDebug>
 
 
 Serial_Access::Serial_Access(QString interface)
@@ -80,10 +80,10 @@ int Serial_Access::Serial_send(QString cmd)
 void Serial_Access::Serial_get()
 {
     QString qs_tmp;
-    if (port->bytesAvailable()) {           
+    if (port->bytesAvailable()) {
            qs_tmp = QString(port->readAll());
         }
-    sl_msg.append(qs_tmp);    
+    sl_msg.append(qs_tmp);
     msg_available = true;
     emit Serial_received();
 }

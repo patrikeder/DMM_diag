@@ -22,56 +22,58 @@
 #include <QStringList>
 #include "../Serial/serial_access.h"
 
-#define INTERFACE_SETTINGS
-
 class M2550_access: public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    #define DBG_MSG_M sl_dbg_msg_m2550.append
-    #define ERR_MSG_M sl_err_msg_m2550.append
+#define DBG_MSG_M sl_dbg_msg_m2550.append
+#define ERR_MSG_M sl_err_msg_m2550.append
 
 
-    enum eMeas {Volt,Curr,Freq,Cap,Res};
+  enum eMeas {Volt,Curr,Freq,Cap,Res};
 
 
-    M2550_access(QString interface);
-    ~M2550_access();
-    bool isConnected();
-    bool disconnect();
-    int M2550_connect(QString interface);
-    
-    int setMeasurement(QString type="VOLT", QString DCnAC="DC");
-    int setResolution(int res=4);
+  M2550_access(QString interface);
+  ~M2550_access();
+  bool isConnected();
+  bool disconnect();
+  int M2550_connect(QString interface);
 
-    int updateSettings();
-    int getSettings();
+  int updateSettings();
+  int getSettings();
 
-    int getMeasurement();
+  int getMeasurement();
 
-    int getValue();
-    
-    int getIDN();
-    
-    QStringList sl_dbg_msg_m2550;
-    QStringList sl_err_msg_m2550;
-    QString sl_msg_m2550;
+  int getValue();
+
+  int getIDN();
+
+  QStringList sl_dbg_msg_m2550;
+  QStringList sl_err_msg_m2550;
+  QString sl_msg_m2550;
+
+public slots:
+  int setMeasurement(QString type="VOLT");
+  int setResolution(int res=4);
+  int setDCAC(QString DCnAC="DC");
+
+
 
 private slots:
-    void getMSG();
+  void getMSG();
 
 signals:
-    void M2550_ack_received();
+  void M2550_ack_received();
 
 private:
-    QString pr_interface,tSENS,tDCAC,tRES,tRANGE;
+  QString pr_interface,tSENS,tDCAC,tRES,tRANGE;
 
-    bool connected;
-    Serial_Access *m2550_serial;    
+  bool connected;
+  Serial_Access *m2550_serial;
 
-    const QString ccRange[2] = {"MAN","AUTO"};
-    const QString ccMeasures[4] = {"VOLT","AMP","OHM","HERZ"};
-    const QString ccResolution = "6";
+  const QString ccRange[2] = {"MAN","AUTO"};
+  const QString ccMeasures[4] = {"VOLT","AMP","OHM","HERZ"};
+  const QString ccResolution = "6";
 
 };
 

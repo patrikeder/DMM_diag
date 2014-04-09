@@ -24,6 +24,7 @@ void M2550_access::getMSG() {
 
     ERR_MSG_M(m2550_serial->sl_err_msg);
     m2550_serial->sl_err_msg.clear();
+
     if (m2550_serial->sl_msg.size()>0)
     {
         QString tmp = m2550_serial->sl_msg.join("");
@@ -38,6 +39,9 @@ void M2550_access::getMSG() {
 }
 
 M2550_access::M2550_access(QString interface) {
+    DBG_MSG_M("DBG out");
+    ERR_MSG_M("ERR out");
+
     pr_interface = interface;
     connected = false;
     m2550_serial = new Serial_Access(pr_interface);
@@ -48,7 +52,7 @@ M2550_access::M2550_access(QString interface) {
     }
     tSENS = "VOLT";
     tDCAC = "DC";
-    tRES = "6";
+    tRES = "5";
     tRANGE = "AUTO";
 }
 
@@ -92,22 +96,27 @@ int M2550_access::getMeasurement(){
     return ret;
 }
 
-int M2550_access::setMeasurement(QString type, QString DCnAC)
+int M2550_access::setMeasurement(QString type)
 {
     tSENS=type;
-    tDCAC=DCnAC;
     updateSettings();
     return 0;
+}
+
+int M2550_access::setDCAC(QString DCnAC){
+  tDCAC=DCnAC;
+  updateSettings();
+  return 0;
 }
 
 int M2550_access::updateSettings(){
     QString cmd;
     if (tSENS == "VOLT" || tSENS == "CURR"){
-        cmd = "SENS:"+tSENS+":"+tDCAC;//+":RANG "+tRANGE+",RES"+tRES;
+        cmd = "SENS:"+tSENS+":"+tDCAC+",RANG "+tRANGE+",RES "+tRES;
     }
     else{
         if (tSENS == "RESI"){
-            cmd = "SENS:"+tSENS;//+":RANG "+tRANGE+",RES"+tRES;
+            cmd = "SENS:"+tSENS,",RANG "+tRANGE+",RES "+tRES;
         }
         else{
             if (tSENS ==  "CAP"){
