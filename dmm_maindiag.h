@@ -16,6 +16,22 @@ class DMM_MainDiag : public QDialog
 
 //public slots:
 //public signals:
+private:
+    Ui::DMM_MainDiag ui;
+    void Instr_init();
+    void Disp_val();
+    QString msg;
+
+    enum eDMMstate {idle,waitformeas,cont_meas};
+    eDMMstate DMMstate;
+    QSignalMapper *signalMapperMT,*signalMapperRE,*signalMapperDCAC,*signalMapperMeas;
+
+    void init_curve();
+    QwtPlotCurve *curve1;
+    double y[101];
+    double x[101];
+    int xpos;
+
 
 private slots:
   void slotConnectClicked();
@@ -24,27 +40,15 @@ private slots:
   void getID();
   void updateMSG();
   void updateDBG();
-  void getMeasurement();
+  void getMeasurement(int state);
   void setMeasurementType(QString type);
   void setResolution(int res);
   void setDCAC(QString DCAC);
+  void Disp_off();
 //private signals:
 
 
-private:
-    Ui::DMM_MainDiag ui;
-    void Instr_init();
-    QString msg;
 
-    enum eDMMstate {idle,waitformeas,cont_meas};
-    eDMMstate DMMstate;
-    QSignalMapper *signalMapperMT,*signalMapperRE,*signalMapperDCAC;
-
-    void init_curve();
-    QwtPlotCurve *curve1;
-    double y[101];
-    double x[101];
-    int xpos = 0;
 
  };
 

@@ -18,6 +18,28 @@
 #include "m2550_access.h"
 #include <QDebug>
 
+
+
+M2550_access::M2550_access(QString interface) {
+    DBG_MSG_M("DBG out");
+    ERR_MSG_M("ERR out");
+
+
+    pr_interface = interface;
+    connected = false;
+    m2550_serial = new Serial_Access(pr_interface);
+    connected = m2550_serial->Serial_get_connected();
+    if (connected){
+        QObject::connect(m2550_serial,SIGNAL(Serial_received()),this,SLOT(getMSG()));
+        DBG_MSG_M("INSTR: SLOT conn");getMSG();
+    }
+    tSENS = "VOLT";
+    tDCAC = "DC";
+    tRES = "5";
+    tRANGE = "AUTO";
+}
+
+
 void M2550_access::getMSG() {
     DBG_MSG_M(m2550_serial->sl_dbg_msg);
     m2550_serial->sl_dbg_msg.clear();
@@ -36,24 +58,6 @@ void M2550_access::getMSG() {
             qDebug()<<"Signal ack";
         }
     }
-}
-
-M2550_access::M2550_access(QString interface) {
-    DBG_MSG_M("DBG out");
-    ERR_MSG_M("ERR out");
-
-    pr_interface = interface;
-    connected = false;
-    m2550_serial = new Serial_Access(pr_interface);
-    connected = m2550_serial->Serial_get_connected();
-    if (connected){
-        QObject::connect(m2550_serial,SIGNAL(Serial_received()),this,SLOT(getMSG()));
-        DBG_MSG_M("INSTR: SLOT conn");getMSG();
-    }
-    tSENS = "VOLT";
-    tDCAC = "DC";
-    tRES = "5";
-    tRANGE = "AUTO";
 }
 
 
@@ -111,6 +115,8 @@ int M2550_access::setDCAC(QString DCnAC){
 
 int M2550_access::updateSettings(){
     QString cmd;
+
+
     if (tSENS == "VOLT" || tSENS == "CURR"){
         cmd = "SENS:"+tSENS+":"+tDCAC+",RANG "+tRANGE+",RES "+tRES;
     }
@@ -127,7 +133,6 @@ int M2550_access::updateSettings(){
                     cmd = "SENS:"+tSENS;//+":RANG "+tRANGE
                 }
                 else{
-
                     cmd = "";
                 }
             }
@@ -149,6 +154,14 @@ int M2550_access::getSettings(){
     return 0;
 }
 
+int M2550_access::DisplayOFF()
+{
+  QString cmd = "DISP:IDLE";
+  DBG_MSG_M("INSTR: "+cmd);
+  int ret = m2550_serial->Serial_send(cmd);
+  getMSG();
+  return 0;
+}
 
 int M2550_access::setResolution(int res)
 {

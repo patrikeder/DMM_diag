@@ -1,5 +1,6 @@
 #include "dmm_maindiag.h"
 #include "dmm_maindiag_priv.h"
+#include <math.h>
 #include <QDebug>
 
 
@@ -8,13 +9,14 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
   ui.setupUi(this);
 
   diag_timer = new QTimer();
-  diag_timer->setInterval(200);
+  updateTimer();
 
   DMMstate = idle;
 
   init_curve();
 
   curve1  = new QwtPlotCurve("Data");
+  curve1->
 
   ui.qwt_ValPlot->setAxisAutoScale(QwtPlot::yRight);
   ui.qwt_ValPlot->setAxisAutoScale(QwtPlot::xTop);
@@ -29,8 +31,17 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
   connect(ui.pb_Connect, SIGNAL( clicked() ),
           this, SLOT( slotConnectClicked() ) );
 
+  signalMapperMeas= new QSignalMapper(this);
+  signalMapperMeas->setMapping(ui.pb_Meas,waitformeas);
+  signalMapperMeas->setMapping(ui.pb_MeasCont,cont_meas);
+
   connect(ui.pb_Meas, SIGNAL( clicked() ),
-          this, SLOT( getMeasurement() ) );
+          signalMapperMeas, SLOT( map() ) );
+  connect(ui.pb_MeasCont, SIGNAL( clicked() ),
+          signalMapperMeas, SLOT( map() ) );
+
+  connect(signalMapperMeas, SIGNAL(mapped(int)),
+          this, SLOT(getMeasurement(int)));
 
 
   signalMapperMT = new QSignalMapper(this);
@@ -65,8 +76,6 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
           this, SLOT(setDCAC(QString)));
 
 
-
-
   signalMapperRE = new QSignalMapper(this);
   signalMapperRE->setMapping(ui.rb_res_3, 3);
   signalMapperRE->setMapping(ui.rb_res_4, 4);
@@ -91,6 +100,9 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
 
   connect(ui.pb_ID,SIGNAL(clicked(bool)),
           this,SLOT(getID()));
+
+  connect(ui.pbDisp,SIGNAL(clicked(bool)),
+          this,SLOT(Disp_off()));
 
   connect(diag_timer, SIGNAL(timeout()),
           this,SLOT(timer_task()));
@@ -138,14 +150,24 @@ void DMM_MainDiag::slotConnectClicked() {
         }
     }
   ui.pb_ID->setEnabled(M51_instr->isConnected());
+  ui.pbDisp->setEnabled(M51_instr->isConnected());
+
   ui.pb_Meas->setEnabled(M51_instr->isConnected());
+  ui.pb_MeasCont->setEnabled(M51_instr->isConnected());
+
+  ui.gB_currty->setEnabled(M51_instr->isConnected());
+  ui.rb_AC->setEnabled(M51_instr->isConnected());
+  ui.rb_DC->setEnabled(M51_instr->isConnected());
+
+  ui.gb_Meas->setEnabled(M51_instr->isConnected());
   ui.rB_Ampere->setEnabled(M51_instr->isConnected());
   ui.rB_Farad->setEnabled(M51_instr->isConnected());
   ui.rB_Herz->setEnabled(M51_instr->isConnected());
   ui.rB_Ohm->setEnabled(M51_instr->isConnected());
   ui.rB_Volt->setEnabled(M51_instr->isConnected());
-  ui.rb_AC->setEnabled(M51_instr->isConnected());
-  ui.rb_DC->setEnabled(M51_instr->isConnected());
+
+  ui.gb_urate->setEnabled(M51_instr->isConnected());
+  ui.hS_rate->setEnabled(M51_instr->isConnected());
 }
 
 void DMM_MainDiag::updateDBG() {
@@ -175,21 +197,14 @@ void DMM_MainDiag::updateMSG() {
               msg.clear();
             }
           if (msg.contains("YES")){
-              QString ql_val;
               switch (DMMstate){
                 case cont_meas:
                   ui.te_output_msg->append(msg);
-                  msg.clear();
+                  Disp_val();
                   break;
                 case waitformeas:
                   ui.te_output_msg->append(msg);
-                  ql_val = msg.split("\n").value(1);
-                  qDebug()<<"MSG:"<<ql_val<<"--D:"<<ql_val.toDouble();
-                  ui.lcdValue->display(ql_val.toDouble());
-                  y[xpos] = ql_val.toDouble();
-                  curve1->setRawSamples(x,y,101);
-                  xpos++;if(xpos>101){xpos=0;}
-                  msg.clear();
+                  Disp_val();
                   DMMstate = idle;
                   break;
                 default:
@@ -202,6 +217,42 @@ void DMM_MainDiag::updateMSG() {
     }
 }
 
+void DMM_MainDiag::Disp_val(){
+  QString ql_val = msg.split("\n").value(1);
+  msg.clear();
+
+  qDebug()<<"MSG:"<<ql_val<<"--D:"<<ql_val.toDouble();
+  ui.lcdValue->display(ql_val.toDouble());
+  y[xpos] = ql_val.toDouble();
+  curve1->setRawSamples(x,y,101);
+  if (xpos>=1){
+      double delta = y[xpos-1]-y[xpos];
+      double val = 10*log(delta/y[xpos]);
+      qDebug()<<"Delta: "<<y[xpos]<<"-"<<y[xpos-1]<<"="<<delta<<" log: "<< val;
+      if (abs(val) < 5 || isnan(val)){
+          ui.pB_Pos->setValue(1);
+          ui.pB_Pos->setValue(1);
+        }
+      else{
+          if (val>0){
+              ui.pB_Pos->setValue((int)val);
+              ui.pB_neg->setValue(0);
+            }
+          else{
+              ui.pB_Pos->setValue(0);
+              ui.pB_neg->setValue((int)(-1*val));
+            }
+        }
+
+    }
+  xpos++;if(xpos>101){xpos=0;}
+}
+
+void DMM_MainDiag::Disp_off(){
+  M51_instr->DisplayOFF();
+}
+
+
 void DMM_MainDiag::Instr_init()
 {
   M51_instr = new M2550_access(cp_interface);
@@ -213,10 +264,26 @@ void DMM_MainDiag::getID()
   M51_instr->getIDN();
 }
 
-void DMM_MainDiag::getMeasurement(){
+void DMM_MainDiag::getMeasurement(int state){
   qDebug()<<"MEAS triggered";
   M51_instr->getMeasurement();
-  DMMstate = waitformeas;
+  switch (state){
+    case cont_meas:
+      switch (DMMstate){
+        case idle:
+          DMMstate = cont_meas;
+          break;
+        case cont_meas:
+          DMMstate = idle;
+        default:
+          DMMstate = (eDMMstate)state;
+          break;
+        }
+      break;
+    default:
+      DMMstate = (eDMMstate)state;
+      break;
+    }
 }
 
 void DMM_MainDiag::setMeasurementType(QString type){
@@ -236,13 +303,17 @@ void DMM_MainDiag::setDCAC(QString DCAC){
 
 void DMM_MainDiag::updateTimer()
 {
-  diag_timer->setInterval(ui.hS_rate->value()*1000);
+  diag_timer->setInterval(ui.hS_rate->value());
+  ui.lcdRate->display(ui.hS_rate->value()/10);
 }
 
 void DMM_MainDiag::timer_task()
 {
   if (M51_instr != NULL) {
       updateDBG();
+      if (DMMstate == cont_meas){
+          M51_instr->getMeasurement();
+        }
     }
 }
 

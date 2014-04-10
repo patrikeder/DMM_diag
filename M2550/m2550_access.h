@@ -56,7 +56,7 @@ public slots:
   int setMeasurement(QString type="VOLT");
   int setResolution(int res=4);
   int setDCAC(QString DCnAC="DC");
-
+  int DisplayOFF();
 
 
 private slots:
@@ -70,10 +70,6 @@ private:
 
   bool connected;
   Serial_Access *m2550_serial;
-
-  const QString ccRange[2] = {"MAN","AUTO"};
-  const QString ccMeasures[4] = {"VOLT","AMP","OHM","HERZ"};
-  const QString ccResolution = "6";
 
 };
 
