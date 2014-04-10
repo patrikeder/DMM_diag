@@ -16,7 +16,6 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
   init_curve();
 
   curve1  = new QwtPlotCurve("Data");
-  curve1->
 
   ui.qwt_ValPlot->setAxisAutoScale(QwtPlot::yRight);
   ui.qwt_ValPlot->setAxisAutoScale(QwtPlot::xTop);
@@ -35,13 +34,10 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
   signalMapperMeas->setMapping(ui.pb_Meas,waitformeas);
   signalMapperMeas->setMapping(ui.pb_MeasCont,cont_meas);
 
-  connect(ui.pb_Meas, SIGNAL( clicked() ),
-          signalMapperMeas, SLOT( map() ) );
-  connect(ui.pb_MeasCont, SIGNAL( clicked() ),
-          signalMapperMeas, SLOT( map() ) );
+  connect(ui.pb_Meas, SIGNAL( clicked() ),signalMapperMeas, SLOT( map() ) );
+  connect(ui.pb_MeasCont, SIGNAL( clicked() ),signalMapperMeas, SLOT( map() ) );
 
-  connect(signalMapperMeas, SIGNAL(mapped(int)),
-          this, SLOT(getMeasurement(int)));
+  connect(signalMapperMeas, SIGNAL(mapped(int)),this, SLOT(getMeasurement(int)));
 
 
   signalMapperMT = new QSignalMapper(this);
@@ -50,30 +46,21 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
   signalMapperMT->setMapping(ui.rB_Ohm, QString("RESI"));
   signalMapperMT->setMapping(ui.rB_Farad, QString("CAP"));
   signalMapperMT->setMapping(ui.rB_Herz, QString("FREQ"));
-  connect(ui.rB_Volt, SIGNAL(clicked()),
-          signalMapperMT, SLOT (map()));
-  connect(ui.rB_Ampere, SIGNAL(clicked()),
-          signalMapperMT, SLOT (map()));
-  connect(ui.rB_Farad, SIGNAL(clicked()),
-          signalMapperMT, SLOT (map()));
-  connect(ui.rB_Herz, SIGNAL(clicked()),
-          signalMapperMT, SLOT (map()));
-  connect(ui.rB_Ohm, SIGNAL(clicked()),
-          signalMapperMT, SLOT (map()));
-  connect(signalMapperMT, SIGNAL(mapped(QString)),
-          this, SLOT(setMeasurementType(QString)));
+  connect(ui.rB_Volt, SIGNAL(clicked()), signalMapperMT, SLOT (map()));
+  connect(ui.rB_Ampere, SIGNAL(clicked()),signalMapperMT, SLOT (map()));
+  connect(ui.rB_Farad, SIGNAL(clicked()),signalMapperMT, SLOT (map()));
+  connect(ui.rB_Herz, SIGNAL(clicked()), signalMapperMT, SLOT (map()));
+  connect(ui.rB_Ohm, SIGNAL(clicked()),  signalMapperMT, SLOT (map()));
+  connect(signalMapperMT, SIGNAL(mapped(QString)), this, SLOT(setMeasurementType(QString)));
 
 
 
   signalMapperDCAC = new QSignalMapper(this);
   signalMapperDCAC->setMapping(ui.rb_DC, QString("DC"));
   signalMapperDCAC->setMapping(ui.rb_AC, QString("AC"));
-  connect(ui.rb_DC, SIGNAL(clicked()),
-          signalMapperDCAC, SLOT (map()));
-  connect(ui.rb_AC, SIGNAL(clicked()),
-          signalMapperDCAC, SLOT (map()));
-  connect(signalMapperDCAC, SIGNAL(mapped(QString)),
-          this, SLOT(setDCAC(QString)));
+  connect(ui.rb_DC, SIGNAL(clicked()),signalMapperDCAC, SLOT (map()));
+  connect(ui.rb_AC, SIGNAL(clicked()),signalMapperDCAC, SLOT (map()));
+  connect(signalMapperDCAC, SIGNAL(mapped(QString)),this, SLOT(setDCAC(QString)));
 
 
   signalMapperRE = new QSignalMapper(this);
@@ -81,31 +68,21 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
   signalMapperRE->setMapping(ui.rb_res_4, 4);
   signalMapperRE->setMapping(ui.rb_res_5, 5);
   signalMapperRE->setMapping(ui.rb_res_6, 6);
-
-  connect(ui.rb_res_3, SIGNAL(clicked()),
-          signalMapperRE, SLOT (map()));
-  connect(ui.rb_res_4, SIGNAL(clicked()),
-          signalMapperRE, SLOT (map()));
-  connect(ui.rb_res_5, SIGNAL(clicked()),
-          signalMapperRE, SLOT (map()));
-  connect(ui.rb_res_6, SIGNAL(clicked()),
-          signalMapperRE, SLOT (map()));
-
-  connect(signalMapperRE, SIGNAL(mapped(int)),
-          this, SLOT(setResolution(int)));
+  connect(ui.rb_res_3, SIGNAL(clicked()), signalMapperRE, SLOT (map()));
+  connect(ui.rb_res_4, SIGNAL(clicked()),signalMapperRE, SLOT (map()));
+  connect(ui.rb_res_5, SIGNAL(clicked()),signalMapperRE, SLOT (map()));
+  connect(ui.rb_res_6, SIGNAL(clicked()),signalMapperRE, SLOT (map()));
+  connect(signalMapperRE, SIGNAL(mapped(int)),this, SLOT(setResolution(int)));
 
 
-  connect(ui.hS_rate, SIGNAL(valueChanged(int)),
-          this,SLOT(updateTimer()));
+  connect(ui.hS_rate, SIGNAL(valueChanged(int)),this,SLOT(updateTimer()));
 
-  connect(ui.pb_ID,SIGNAL(clicked(bool)),
-          this,SLOT(getID()));
+  connect(ui.pb_ID,SIGNAL(clicked(bool)),this,SLOT(getID()));
+  connect(ui.pb_Settings,SIGNAL(clicked(bool)),this,SLOT(getSettings()));
 
-  connect(ui.pbDisp,SIGNAL(clicked(bool)),
-          this,SLOT(Disp_off()));
+  connect(ui.pbDisp,SIGNAL(clicked(bool)),this,SLOT(Disp_off()));
 
-  connect(diag_timer, SIGNAL(timeout()),
-          this,SLOT(timer_task()));
+  connect(diag_timer, SIGNAL(timeout()),this,SLOT(timer_task()));
 
   diag_timer->start();
   this->show();
@@ -150,6 +127,7 @@ void DMM_MainDiag::slotConnectClicked() {
         }
     }
   ui.pb_ID->setEnabled(M51_instr->isConnected());
+  ui.pb_Settings->setEnabled(M51_instr->isConnected());
   ui.pbDisp->setEnabled(M51_instr->isConnected());
 
   ui.pb_Meas->setEnabled(M51_instr->isConnected());
@@ -191,22 +169,26 @@ void DMM_MainDiag::updateMSG() {
       if (M51_instr->sl_msg_m2550.size()>0) {
           msg = M51_instr->sl_msg_m2550;
           M51_instr->sl_msg_m2550.clear();
-
+          // negative relply
           if (msg.contains("NO")){
               ui.te_output_dbg->append("NACK: "+msg);
               msg.clear();
             }
+          // something happened
           if (msg.contains("YES")){
               switch (DMMstate){
+                // continuous measurement
                 case cont_meas:
                   ui.te_output_msg->append(msg);
                   Disp_val();
                   break;
+                // single measurement  -> go to idle
                 case waitformeas:
                   ui.te_output_msg->append(msg);
                   Disp_val();
                   DMMstate = idle;
                   break;
+                // Not requested, just report
                 default:
                   ui.te_output_msg->append(msg);
                   msg.clear();
@@ -221,31 +203,30 @@ void DMM_MainDiag::Disp_val(){
   QString ql_val = msg.split("\n").value(1);
   msg.clear();
 
-  qDebug()<<"MSG:"<<ql_val<<"--D:"<<ql_val.toDouble();
   ui.lcdValue->display(ql_val.toDouble());
   y[xpos] = ql_val.toDouble();
   curve1->setRawSamples(x,y,101);
   if (xpos>=1){
-      double delta = y[xpos-1]-y[xpos];
-      double val = 10*log(delta/y[xpos]);
-      qDebug()<<"Delta: "<<y[xpos]<<"-"<<y[xpos-1]<<"="<<delta<<" log: "<< val;
-      if (abs(val) < 5 || isnan(val)){
+      double delta = y[xpos-1]-y[xpos]; // difference to previous value
+      double val = 10*log(delta/y[xpos]); // scale logarithmically
+
+      if (abs(val) < 5 || isnan(val)){  // is log(difference) is to low or not a number
           ui.pB_Pos->setValue(1);
           ui.pB_Pos->setValue(1);
         }
       else{
           if (val>0){
-              ui.pB_Pos->setValue((int)val);
+              ui.pB_Pos->setValue((int)abs(val));
               ui.pB_neg->setValue(0);
             }
           else{
               ui.pB_Pos->setValue(0);
-              ui.pB_neg->setValue((int)(-1*val));
+              ui.pB_neg->setValue((int)abs(val));
             }
         }
 
     }
-  xpos++;if(xpos>101){xpos=0;}
+  xpos++;if(xpos>101){xpos=0;} //set to 0 once 101 values are dsiplayed
 }
 
 void DMM_MainDiag::Disp_off(){
@@ -260,8 +241,11 @@ void DMM_MainDiag::Instr_init()
 
 void DMM_MainDiag::getID()
 {
-  ui.te_output_dbg->append("IDN = ");
-  M51_instr->getIDN();
+    M51_instr->getIDN();
+}
+
+void DMM_MainDiag::getSettings(){
+    M51_instr->getSettings();
 }
 
 void DMM_MainDiag::getMeasurement(int state){

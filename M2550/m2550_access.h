@@ -26,12 +26,8 @@ class M2550_access: public QObject
 {
   Q_OBJECT
 public:
-#define DBG_MSG_M sl_dbg_msg_m2550.append
-#define ERR_MSG_M sl_err_msg_m2550.append
-
-
-  enum eMeas {Volt,Curr,Freq,Cap,Res};
-
+#define DBG_MSG_M sl_dbg_msg_m2550.append // debug messages
+#define ERR_MSG_M sl_err_msg_m2550.append // error indicators
 
   M2550_access(QString interface);
   ~M2550_access();
@@ -43,14 +39,11 @@ public:
   int getSettings();
 
   int getMeasurement();
-
-  int getValue();
-
   int getIDN();
 
-  QStringList sl_dbg_msg_m2550;
-  QStringList sl_err_msg_m2550;
-  QString sl_msg_m2550;
+  QStringList sl_dbg_msg_m2550; // Debug message buffer
+  QStringList sl_err_msg_m2550; // Error message buffer
+  QString sl_msg_m2550;         // Main message buffer
 
 public slots:
   int setMeasurement(QString type="VOLT");

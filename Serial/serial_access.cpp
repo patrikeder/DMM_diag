@@ -23,119 +23,118 @@
 
 Serial_Access::Serial_Access(QString interface)
 {
-    int i_return = 0;
-    DBG_MSG_S("INTERFACE: DBG_EN");
-    ERR_MSG_S("INTERFACE: ERR_EN");
-    msg_available = false;
-    sl_msg.clear();
-    sl_dbg_msg.clear();
-    sl_err_msg.clear();
+  int i_return = 0;
+  DBG_MSG_S("INTERFACE: DBG_EN");
+  ERR_MSG_S("INTERFACE: ERR_EN");
+  msg_available = false;
+  sl_msg.clear();
+  sl_dbg_msg.clear();
+  sl_err_msg.clear();
 
-    this->port = new QextSerialPort(interface,QextSerialPort::EventDriven);
-    port->setPortName(interface);
-    if (port->open(QIODevice::ReadWrite | QIODevice::Unbuffered)){
-        i_return = set_interface_attribs();//(*port,BAUD19200,PAR_NONE);
-        port->flush();
-        DBG_MSG_S("INTERFACE: created");
+  this->port = new QextSerialPort(interface,QextSerialPort::EventDriven);
+  port->setPortName(interface);
+  if (port->open(QIODevice::ReadWrite | QIODevice::Unbuffered)){
+      i_return = set_interface_attribs();//(*port,BAUD19200,PAR_NONE);
+      port->flush();
+      DBG_MSG_S("INTERFACE: created");
     }
-    else {
-        // error code goes here
-        i_return = -1;
-        ERR_MSG_S("INTERFACE: create error");
+  else {
+      // error code goes here
+      i_return = -1;
+      ERR_MSG_S("INTERFACE: create error");
     }
 
-    if  (i_return >= 0) {
-        if (Serial_get_connected()){
-            if (QObject::connect(port, SIGNAL(readyRead()), this,SLOT(Serial_get())))
+  if  (i_return >= 0) {
+      if (Serial_get_connected()){
+          if (QObject::connect(port, SIGNAL(readyRead()), this,SLOT(Serial_get())))
             {
-                DBG_MSG_S("INTERFACE: connected");
+              DBG_MSG_S("INTERFACE: "+interface+" INTERFACE: connected");
             }
-            else{
-                ERR_MSG_S("INTERFACE: signal NOT connected");
+          else{
+              ERR_MSG_S("INTERFACE: signal NOT connected");
             }
         }
-        else {
-            ERR_MSG_S("INTERFACE: NOT open");
+      else {
+          ERR_MSG_S("INTERFACE: could NOT open"+interface);
         }
     }
-    else{
-        ERR_MSG_S("INTERFACE: NOT available");
+  else{
+      ERR_MSG_S("INTERFACE: "+interface+" NOT available");
     }
 }
 
 Serial_Access::~Serial_Access()
 {
-    Serial_disconnect();
+  Serial_disconnect();
 }
 
 
 int Serial_Access::Serial_send(QString cmd)
 {
-    cmd.append("\n");
-    DBG_MSG_S("INTERFACE: Write "+cmd);
-    port->write(cmd.toAscii());
-    return 0;
+  cmd.append("\n");
+  DBG_MSG_S("INTERFACE: Write "+cmd);
+  port->write(cmd.toAscii());
+  return 0;
 }
 
 void Serial_Access::Serial_get()
 {
-    QString qs_tmp;
-    if (port->bytesAvailable()) {
-           qs_tmp = QString(port->readAll());
-        }
-    sl_msg.append(qs_tmp);
-    msg_available = true;
-    emit Serial_received();
+  QString qs_tmp;
+  // read out all available bytes
+  if (port->bytesAvailable()) {
+      qs_tmp = QString(port->readAll());
+    }
+  // store into message buffer
+  sl_msg.append(qs_tmp);
+  msg_available = true; //TODO: needed ?
+  // signal available data
+  emit Serial_received();
 }
 
 
 int Serial_Access::Serial_open(QString pr_interface)
 {
-    int i_return = 0;
+  int i_return = 0;
 
-    this->port = new QextSerialPort(pr_interface,QextSerialPort::EventDriven);
-    port->setPortName(pr_interface);
-    if (port->open(QIODevice::ReadWrite | QIODevice::Unbuffered)){
-        i_return = set_interface_attribs();//(*port,BAUD19200,PAR_NONE);
-        DBG_MSG_S("INTERFACE: created");
+  this->port = new QextSerialPort(pr_interface,QextSerialPort::EventDriven);
+  port->setPortName(pr_interface);
+  if (port->open(QIODevice::ReadWrite | QIODevice::Unbuffered)){
+      i_return = set_interface_attribs();//(*port,BAUD19200,PAR_NONE);
     }
-    else {
-        // error code goes here
-        i_return = -1;
-        ERR_MSG_S("INTERFACE: create error");
+  else {
+      i_return = -1;
     }
-    return i_return;
+  return i_return;
 
 }
 
 int Serial_Access::Serial_get_connected()
 {
-    return port->isOpen();
+  return port->isOpen();
 }
 
 int Serial_Access::Serial_connect(QString pr_interface) {
-    int i_return = 0;
+  int i_return = 0;
 
-    if  (Serial_open(pr_interface) >= 0) {
-        i_return = 0;
-        DBG_MSG_S("INTERFACE: connected");
+  if  (Serial_open(pr_interface) >= 0) {
+      i_return = 0;
     }
-    else {
-        i_return = -1;
-        ERR_MSG_S("INTERFACE: NOT connected");
+  else {
+      i_return = -1;
+
     }
 
-    return i_return;
+  return i_return;
 }
 
 
 int Serial_Access::Serial_disconnect()
 {
-    if (port->isOpen())
-        port->close();
-    DBG_MSG_S("INTERFACE: disconnected");
+  if (port->isOpen())
+    port->close();
+  DBG_MSG_S("INTERFACE: disconnected");
 
-    return 0;
+  return 0;
 }
 
 
@@ -144,12 +143,12 @@ int
 Serial_Access::set_interface_attribs ()//QextSerialPort &fd, BaudRateType speed, ParityType parity)
 {
 
-    port->setBaudRate(BAUD19200);
-    port->setFlowControl(FLOW_OFF);
-    port->setParity(PAR_NONE);
-    port->setDataBits(DATA_8);
-    port->setStopBits(STOP_1);
-    return 0;
+  port->setBaudRate(BAUD19200);
+  port->setFlowControl(FLOW_OFF);
+  port->setParity(PAR_NONE);
+  port->setDataBits(DATA_8);
+  port->setStopBits(STOP_1);
+  return 0;
 }
 
 int
@@ -159,10 +158,10 @@ Serial_Access::set_blocking (QextSerialPort fd, int should_block)
 }
 
 bool Serial_Access::Serial_get_ready(){
-    return msg_available;
+  return msg_available;
 }
 
 void Serial_Access::Serial_reset_ready(){
-    msg_available = false;
+  msg_available = false;
 }
 

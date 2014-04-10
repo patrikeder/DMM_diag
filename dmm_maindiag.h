@@ -10,27 +10,27 @@
 class DMM_MainDiag : public QDialog
 {
   Q_OBJECT
-  public:
-      DMM_MainDiag ( QWidget *parent=0);
-      ~DMM_MainDiag();
+public:
+  DMM_MainDiag ( QWidget *parent=0);
+  ~DMM_MainDiag();
 
-//public slots:
-//public signals:
+  //public slots:
+  //public signals:
 private:
-    Ui::DMM_MainDiag ui;
-    void Instr_init();
-    void Disp_val();
-    QString msg;
+  Ui::DMM_MainDiag ui;
+  void Instr_init();
+  void Disp_val();
+  QString msg;
 
-    enum eDMMstate {idle,waitformeas,cont_meas};
-    eDMMstate DMMstate;
-    QSignalMapper *signalMapperMT,*signalMapperRE,*signalMapperDCAC,*signalMapperMeas;
+  enum eDMMstate {idle,waitformeas,cont_meas};
+  eDMMstate DMMstate;
+  QSignalMapper *signalMapperMT,*signalMapperRE,*signalMapperDCAC,*signalMapperMeas;
 
-    void init_curve();
-    QwtPlotCurve *curve1;
-    double y[101];
-    double x[101];
-    int xpos;
+  void init_curve();
+  QwtPlotCurve *curve1;
+  double y[101];
+  double x[101];
+  int xpos;
 
 
 private slots:
@@ -38,6 +38,7 @@ private slots:
   void timer_task();
   void updateTimer();
   void getID();
+  void getSettings();
   void updateMSG();
   void updateDBG();
   void getMeasurement(int state);
@@ -45,11 +46,8 @@ private slots:
   void setResolution(int res);
   void setDCAC(QString DCAC);
   void Disp_off();
-//private signals:
+  //private signals:
 
-
-
-
- };
+};
 
 #endif
