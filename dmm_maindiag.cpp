@@ -258,7 +258,17 @@ void DMM_MainDiag::Disp_val(){
           break;
         }
     }
+  bool overload = ql_val.isEmpty() && msg.contains("OVLD");
   msg.clear();
+  if (overload){
+      // out of range (e.g. open circuit in ohms mode): no value, so keep it out of the plot
+      ui.lcdValue->setDigitCount(5);
+      ui.lcdValue->display("  oL"); // lower case: an upper case O would look like a 0
+      ui.lbl_unit->setText(base_unit());
+      ui.pB_Pos->setValue(0);
+      ui.pB_neg->setValue(0);
+      return;
+    }
   if (ql_val.isEmpty())
     return; // no reading in this reply
 

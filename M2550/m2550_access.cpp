@@ -17,6 +17,7 @@
 
 #include "m2550_access.h"
 #include <QDebug>
+#include <QHash>
 
 M2550_access::M2550_access(QString interface)
 {
@@ -126,59 +127,32 @@ int M2550_access::setDCAC(QString DCnAC)
 
 int M2550_access::updateSettings()
 {
-  QString cmd;
-
-  // TODO: map tSense to int type ans use this:
-  /*  switch (tSENS)
-    {
-    case "VOLT":
-    case "CURR":
-      cmd = "SENS:" + tSENS + ":" + tDCAC + ",RANG " + tRANGE + ",RES " + tRES; // Voltage and Current do support all settings
-      break;
-    case "RESI":
-      cmd = "SENS:" + tSENS, ",RANG " + tRANGE + ",RES " + tRES;
-      break;
-    case "CAP":
-      cmd = "SENS:" + tSENS; //+":RANG "+tRANGE
-      break;
-    case "FREQ":
-      cmd = "SENS:" + tSENS; //+":RANG "+tRANGE
-      break;
-    default:
-      cmd = "";
-      break;
-    }
-  */
-
-  if (tSENS == "VOLT" || tSENS == "CURR")
+  // which parts of the SENS command each measurement type supports
+  struct SensCaps
   {
-    cmd = "SENS:" + tSENS + ":" + tDCAC + ",RANG " + tRANGE + ",RES " + tRES; // Voltage and Current do support all settings
-  }
-  else
+    bool dcac;     // accepts :DC / :AC
+    bool rangeRes; // accepts RANG / RES
+  };
+  static const QHash<QString, SensCaps> caps = {
+    {"VOLT", {true, true}},
+    {"CURR", {true, true}},
+    {"RESI", {false, true}},
+    {"CAP", {false, false}},
+    {"FREQ", {false, false}},
+  };
+
+  auto it = caps.constFind(tSENS);
+  if (it == caps.constEnd())
   {
-    if (tSENS == "RESI")
-    {
-      cmd = "SENS:" + tSENS, ",RANG " + tRANGE + ",RES " + tRES;
-    }
-    else
-    {
-      if (tSENS == "CAP")
-      {
-        cmd = "SENS:" + tSENS; //+":RANG "+tRANGE
-      }
-      else
-      {
-        if (tSENS == "FREQ")
-        {
-          cmd = "SENS:" + tSENS; //+":RANG "+tRANGE
-        }
-        else
-        {
-          cmd = "";
-        }
-      }
-    }
+    ERR_MSG_M("INSTR: unknown measurement type " + tSENS);
+    return -1;
   }
+
+  QString cmd = "SENS:" + tSENS;
+  if (it->dcac)
+    cmd += ":" + tDCAC;
+  if (it->rangeRes)
+    cmd += ",RANG " + tRANGE + ",RES " + tRES;
 
   DBG_MSG_M("INSTR: " + cmd);
   int ret = m2550_serial->Serial_send(cmd);
