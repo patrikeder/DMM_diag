@@ -1,4 +1,4 @@
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "dmm_maindiag.h"
 
 int main(int argc, char** argv)
@@ -7,7 +7,9 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
     DMM_Diag = new DMM_MainDiag();
     DMM_Diag->show();
-    return app.exec();
+    int ret = app.exec();
+    delete DMM_Diag; // releases the instrument (back to local mode)
+    return ret;
 }
 
 

@@ -14,53 +14,206 @@
    <string>Dialog</string>
   </property>
   <property name="locale">
-   <locale language="English" country="UnitedStates"/>
+   <locale language="English" country="UnitedStates" />
   </property>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>911</width>
-     <height>481</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout_7">
-    <item>
-     <widget class="QToolBox" name="toolBox">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="Display">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>909</width>
-         <height>360</height>
-        </rect>
-       </property>
-       <attribute name="label">
-        <string>Display</string>
-       </attribute>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>560</x>
-          <y>30</y>
-          <width>315</width>
-          <height>166</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
-         </property>
-         <property name="spacing">
-          <number>6</number>
-         </property>
-         <item row="0" column="2" rowspan="2">
-          <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_7">
+   <item>
+    <widget class="QToolBox" name="toolBox">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="Display">
+      <attribute name="label">
+       <string>Display</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="displayLayout">
+       <item>
+        <layout class="QVBoxLayout" name="Values">
+         <item>
+          <layout class="QHBoxLayout" name="valueRow">
+           <item>
+            <widget class="QLCDNumber" name="lcdValue">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>1</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>90</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Box</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <property name="smallDecimalPoint">
+              <bool>true</bool>
+             </property>
+             <property name="digitCount">
+              <number>5</number>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lbl_unit">
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>28</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>Unit of the displayed value</string>
+             </property>
+             <property name="text">
+              <string>V</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QProgressBar" name="pB_neg">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>10</number>
+             </property>
+             <property name="textVisible">
+              <bool>false</bool>
+             </property>
+             <property name="invertedAppearance">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QProgressBar" name="pB_Pos">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>10</number>
+             </property>
+             <property name="textVisible">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QChartView" name="chv_ValPlot">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>2</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>180</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="Controls">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Digits</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="rb_res_3">
+             <property name="text">
+              <string>3</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bgRES</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="rb_res_4">
+             <property name="text">
+              <string>4</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bgRES</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="rb_res_5">
+             <property name="text">
+              <string>5</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bgRES</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="rb_res_6">
+             <property name="text">
+              <string>6</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bgRES</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
             <widget class="QGroupBox" name="gb_Meas">
              <property name="enabled">
@@ -69,174 +222,78 @@
              <property name="title">
               <string>Measurement</string>
              </property>
-             <widget class="QSplitter" name="splitter">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>30</y>
-                <width>79</width>
-                <height>105</height>
-               </rect>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <widget class="QRadioButton" name="rB_Volt">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Volt</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">bgMT</string>
-               </attribute>
-              </widget>
-              <widget class="QRadioButton" name="rB_Ampere">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Ampere</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">bgMT</string>
-               </attribute>
-              </widget>
-              <widget class="QRadioButton" name="rB_Ohm">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Ohm</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">bgMT</string>
-               </attribute>
-              </widget>
-              <widget class="QRadioButton" name="rB_Herz">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Herz</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">bgMT</string>
-               </attribute>
-              </widget>
-              <widget class="QRadioButton" name="rB_Farad">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Farad</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">bgMT</string>
-               </attribute>
-              </widget>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <item>
+               <widget class="QRadioButton" name="rB_Volt">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Volt</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">bgMT</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rB_Ampere">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Ampere</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">bgMT</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rB_Ohm">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Ohm</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">bgMT</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rB_Herz">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Herz</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">bgMT</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rB_Farad">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Farad</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">bgMT</string>
+                </attribute>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
-          </layout>
-         </item>
-         <item row="1" column="4">
-          <widget class="QPushButton" name="pb_Meas">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>27</height>
-            </size>
-           </property>
-           <property name="autoFillBackground">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Single</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QGroupBox" name="gb_Range">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="title">
-                <string>Range</string>
-               </property>
-               <widget class="QPushButton" name="pb_Up">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>20</y>
-                  <width>85</width>
-                  <height>27</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string>Up</string>
-                </property>
-               </widget>
-               <widget class="QPushButton" name="pb_Auto">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>50</y>
-                  <width>85</width>
-                  <height>27</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string>Auto</string>
-                </property>
-               </widget>
-               <widget class="QPushButton" name="pb_Down">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>80</y>
-                  <width>85</width>
-                  <height>27</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string>Down</string>
-                </property>
-               </widget>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-         <item row="0" column="3">
-          <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
             <widget class="QGroupBox" name="gB_currty">
              <property name="enabled">
@@ -245,165 +302,152 @@
              <property name="title">
               <string>Current Type</string>
              </property>
-             <widget class="QWidget" name="layoutWidget">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>20</y>
-                <width>51</width>
-                <height>50</height>
-               </rect>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_9">
-               <item>
-                <widget class="QRadioButton" name="rb_DC">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>DC</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                 <attribute name="buttonGroup">
-                  <string notr="true">bgDCAC</string>
-                 </attribute>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="rb_AC">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>AC</string>
-                 </property>
-                 <attribute name="buttonGroup">
-                  <string notr="true">bgDCAC</string>
-                 </attribute>
-                </widget>
-               </item>
-              </layout>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_9">
+              <item>
+               <widget class="QRadioButton" name="rb_DC">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>DC</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">bgDCAC</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rb_AC">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>AC</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">bgDCAC</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </widget>
            </item>
-          </layout>
-         </item>
-         <item row="1" column="3">
-          <widget class="QPushButton" name="pb_MeasCont">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Continuous</string>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>560</x>
-          <y>0</y>
-          <width>214</width>
-          <height>23</height>
-         </rect>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Digits</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="rb_res_3">
-           <property name="text">
-            <string>3</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">bgRES</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="rb_res_4">
-           <property name="text">
-            <string>4</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">bgRES</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="rb_res_5">
-           <property name="text">
-            <string>5</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">bgRES</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="rb_res_6">
-           <property name="text">
-            <string>6</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">bgRES</string>
-           </attribute>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>670</x>
-          <y>200</y>
-          <width>201</width>
-          <height>54</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="Update_grp">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="QGroupBox" name="gb_urate">
+            <widget class="QGroupBox" name="gb_Range">
              <property name="enabled">
               <bool>false</bool>
              </property>
              <property name="title">
-              <string>Updaterate</string>
+              <string>Range</string>
              </property>
-             <property name="flat">
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QPushButton" name="pb_Up">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Up</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pb_Auto">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Auto</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pb_Down">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Down</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QPushButton" name="pb_MeasCont">
+             <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="text">
+              <string>Continuous</string>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pb_Meas">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Single</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="gb_urate">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="title">
+            <string>Update rate</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
              <widget class="QSlider" name="hS_rate">
               <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>10</y>
-                <width>131</width>
-                <height>29</height>
-               </rect>
+              <property name="toolTip">
+               <string>Measurement interval in continuous mode</string>
               </property>
               <property name="minimum">
                <number>100</number>
@@ -415,7 +459,7 @@
                <number>10</number>
               </property>
               <property name="pageStep">
-               <number>5</number>
+               <number>100</number>
               </property>
               <property name="value">
                <number>1000</number>
@@ -426,406 +470,312 @@
               <property name="tickPosition">
                <enum>QSlider::TicksBelow</enum>
               </property>
+              <property name="tickInterval">
+               <number>500</number>
+              </property>
              </widget>
+            </item>
+            <item>
              <widget class="QLCDNumber" name="lcdRate">
               <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="geometry">
-               <rect>
-                <x>144</x>
-                <y>0</y>
-                <width>51</width>
-                <height>50</height>
-               </rect>
-              </property>
-              <property name="numDigits">
-               <number>3</number>
+              <property name="minimumSize">
+               <size>
+                <width>70</width>
+                <height>34</height>
+               </size>
               </property>
               <property name="digitCount">
-               <number>3</number>
+               <number>4</number>
               </property>
               <property name="segmentStyle">
                <enum>QLCDNumber::Flat</enum>
               </property>
              </widget>
-            </widget>
-           </item>
-          </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_ms">
+              <property name="text">
+               <string>ms</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>-2</y>
-          <width>521</width>
-          <height>391</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="Values">
-         <item>
-          <layout class="QVBoxLayout" name="Numeric">
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="RAWData">
+      <attribute name="label">
+       <string>RAW Data</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="Messages">
+       <item>
+        <widget class="QPushButton" name="pb_clear">
+         <property name="text">
+          <string>Clear</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="tab_Messages">
+          <attribute name="title">
+           <string>Messages</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
-              <widget class="QLCDNumber" name="lcdValue">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="frameShape">
-                <enum>QFrame::Box</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
-               </property>
-               <property name="smallDecimalPoint">
-                <bool>true</bool>
-               </property>
-               <property name="digitCount">
-                <number>5</number>
-               </property>
-               <property name="segmentStyle">
-                <enum>QLCDNumber::Flat</enum>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Messages</string>
                </property>
               </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <item>
-                <widget class="QProgressBar" name="pB_neg">
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                 <property name="value">
-                  <number>10</number>
-                 </property>
-                 <property name="textVisible">
-                  <bool>false</bool>
-                 </property>
-                 <property name="invertedAppearance">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QProgressBar" name="pB_Pos">
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                 <property name="value">
-                  <number>10</number>
-                 </property>
-                 <property name="textVisible">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QTextEdit" name="te_output_msg">
+               <property name="acceptDrops">
+                <bool>false</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_13">
+             <item>
+              <widget class="QPushButton" name="pb_ID">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>ID</string>
+               </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pb_Settings">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Settings</string>
+               </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QwtPlot" name="qwt_ValPlot">
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="RAWData">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>909</width>
-         <height>360</height>
-        </rect>
-       </property>
-       <attribute name="label">
-        <string>RAW Data</string>
-       </attribute>
-       <widget class="QWidget" name="layoutWidget_2">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>841</width>
-          <height>301</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="Messages">
-         <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
-         </property>
-         <item>
-          <widget class="QPushButton" name="pb_clear">
-           <property name="text">
-            <string>Clear</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QTabWidget" name="tabWidget">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <widget class="QWidget" name="tab_Messages">
-            <attribute name="title">
-             <string>Messages</string>
-            </attribute>
-            <widget class="QWidget" name="layoutWidget_3">
-             <property name="geometry">
-              <rect>
-               <x>20</x>
-               <y>10</y>
-               <width>702</width>
-               <height>215</height>
-              </rect>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_12">
-              <item>
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>Messages</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QTextEdit" name="te_output_msg">
-                <property name="acceptDrops">
-                 <bool>false</bool>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QPushButton" name="pb_ID">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>740</x>
-               <y>10</y>
-               <width>85</width>
-               <height>27</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>ID</string>
-             </property>
-             <property name="checkable">
-              <bool>false</bool>
-             </property>
-            </widget>
-            <widget class="QPushButton" name="pb_Settings">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>740</x>
-               <y>50</y>
-               <width>85</width>
-               <height>27</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Settings</string>
-             </property>
-             <property name="checkable">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </widget>
-           <widget class="QWidget" name="tab_Debug">
-            <attribute name="title">
-             <string>Debug</string>
-            </attribute>
-            <widget class="QWidget" name="layoutWidget_4">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>10</y>
-               <width>702</width>
-               <height>206</height>
-              </rect>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_10">
-                <item>
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>Debug</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QTextEdit" name="te_output_dbg">
-                  <property name="acceptDrops">
-                   <bool>false</bool>
-                  </property>
-                  <property name="readOnly">
-                   <bool>true</bool>
-                  </property>
-                  <property name="textInteractionFlags">
-                   <set>Qt::NoTextInteraction</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_11">
-                <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>Errors</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QTextEdit" name="te_output_err">
-                  <property name="acceptDrops">
-                   <bool>false</bool>
-                  </property>
-                  <property name="readOnly">
-                   <bool>true</bool>
-                  </property>
-                  <property name="textInteractionFlags">
-                   <set>Qt::NoTextInteraction</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
+         </widget>
+         <widget class="QWidget" name="tab_Debug">
+          <attribute name="title">
+           <string>Debug</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Debug</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QTextEdit" name="te_output_dbg">
+               <property name="acceptDrops">
+                <bool>false</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <enum>Qt::NoTextInteraction</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_11">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Errors</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QTextEdit" name="te_output_err">
+               <property name="acceptDrops">
+                <bool>false</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <enum>Qt::NoTextInteraction</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Fixed</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>18</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <layout class="QGridLayout" name="Buttons">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetDefaultConstraint</enum>
-      </property>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>183</width>
-          <height>15</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="3">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <property name="sizeConstraint">
-         <enum>QLayout::SetFixedSize</enum>
-        </property>
-        <item>
-         <widget class="QPushButton" name="pbDisp">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>DispOff</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDialogButtonBox" name="buttonBox">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="standardButtons">
-           <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLineEdit" name="te_interface">
-        <property name="inputMethodHints">
-         <set>Qt::ImhNone</set>
-        </property>
-        <property name="text">
-         <string>/dev/ttyUSB0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="pb_Connect">
-        <property name="text">
-         <string>Connect</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
-  </widget>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>18</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="Buttons">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <item row="0" column="2">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>183</width>
+         <height>15</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="3">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetFixedSize</enum>
+       </property>
+       <item>
+        <widget class="QPushButton" name="pbDisp">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>DispOff</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pb_Quit">
+         <property name="toolTip">
+          <string>Return the instrument to local mode, release the port and quit</string>
+         </property>
+         <property name="text">
+          <string>Quit</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLineEdit" name="te_interface">
+       <property name="inputMethodHints">
+        <set>Qt::ImhNone</set>
+       </property>
+       <property name="text">
+        <string>/dev/ttyUSB0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="cb_sim">
+       <property name="toolTip">
+        <string>Simulated instrument - no hardware needed</string>
+       </property>
+       <property name="text">
+        <string>Simulation</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="pb_Connect">
+       <property name="text">
+        <string>Connect</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QwtPlot</class>
-   <extends>QFrame</extends>
-   <header>qwt_plot.h</header>
-   <container>1</container>
+   <class>QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">QChartView</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources />
  <connections>
   <connection>
    <sender>pB_neg</sender>
@@ -844,20 +794,16 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>clicked(QAbstractButton*)</signal>
+   <sender>pb_Quit</sender>
+   <signal>clicked()</signal>
    <receiver>DMM_MainDiag</receiver>
    <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>746</x>
-     <y>487</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>733</x>
-     <y>512</y>
-    </hint>
-   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Connect</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>cb_sim</receiver>
+   <slot>setDisabled(bool)</slot>
   </connection>
   <connection>
    <sender>pb_Connect</sender>
@@ -925,8 +871,8 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="bgDCAC"/>
-  <buttongroup name="bgRES"/>
-  <buttongroup name="bgMT"/>
+  <buttongroup name="bgDCAC" />
+  <buttongroup name="bgRES" />
+  <buttongroup name="bgMT" />
  </buttongroups>
 </ui>

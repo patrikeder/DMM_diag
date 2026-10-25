@@ -3,9 +3,9 @@
 
 #include "ui_dmm_maindiag.h"
 #include <QSignalMapper>
-#include <qwt.h>
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
+#include <QChart>
+#include <QLineSeries>
+#include <QValueAxis>
 
 class DMM_MainDiag : public QDialog
 {
@@ -20,6 +20,10 @@ private:
   Ui::DMM_MainDiag ui;
   void Instr_init();
   void Disp_val();
+  void show_value(const QString &raw, double val);
+  QString base_unit() const;
+  QString curType; // measurement type as selected in the GUI: VOLT, CURR, RESI, CAP, FREQ
+  static const int MAX_LCD_DIGITS = 10; // above this readings are shown in scientific notation
   QString msg;
 
   enum eDMMstate {idle,waitformeas,cont_meas};
@@ -27,10 +31,14 @@ private:
   QSignalMapper *signalMapperMT,*signalMapperRE,*signalMapperDCAC,*signalMapperMeas;
 
   void init_curve();
-  QwtPlotCurve *curve1;
+  void update_curve();
+  QChart *chart;
+  QLineSeries *curve1;
+  QValueAxis *axisX, *axisY;
   double y[101];
   double x[101];
   int xpos;
+  int nvalid; // number of samples received so far (max 101)
 
 
 private slots:

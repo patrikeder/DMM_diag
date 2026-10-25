@@ -21,7 +21,7 @@
 #include <QSignalMapper>
 #include <QString>
 #include <QStringList>
-#include <QtExtSerialPort/qextserialport.h>
+#include <QSerialPort>
 
 class Serial_Access: public QObject
 {
@@ -31,10 +31,14 @@ class Serial_Access: public QObject
 
 
 public:
+  // interface name that selects the built-in simulated instrument instead of a real port
+  static const QString SIM_INTERFACE;
+
   Serial_Access(QString interface);
   ~Serial_Access();
   
   int Serial_send(QString cmd);
+  int Serial_send_wait(QString cmd, int timeout_ms); // send, block until written and answered (for shutdown)
 
   
   int Serial_get_connected();
@@ -57,10 +61,19 @@ private:
   bool msg_available; // TODO: to be replaced by signal/mutex
 
   int Serial_open(QString interface);
-  QextSerialPort *port;
+  QSerialPort *port;
   int ser_connected;
-  int set_interface_attribs ();//QextSerialPort &fd, BaudRateType speed, ParityType parity);
-  int set_blocking (QextSerialPort fd, int should_block);
+  int rx_acks; // YES/NO acknowledges received so far
+
+  // simulated instrument
+  bool sim_active;
+  bool sim_connected;
+  QString sim_sens, sim_dcac;
+  int sim_res;
+  int sim_tick;
+  void sim_send(const QString &cmd);
+  QString sim_value();
+  int set_interface_attribs ();
   
 };
 
