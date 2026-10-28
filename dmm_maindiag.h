@@ -2,7 +2,7 @@
 #define DMM_MainDiag_H
 
 #include "ui_dmm_maindiag.h"
-#include <QSignalMapper>
+// Removed QSignalMapper include - replaced with modern lambda connections
 #include <QChart>
 #include <QLineSeries>
 #include <QValueAxis>
@@ -29,7 +29,7 @@ private:
 
   enum eDMMstate {idle,waitformeas,cont_meas};
   eDMMstate DMMstate;
-  QSignalMapper *signalMapperMT,*signalMapperRE,*signalMapperDCAC,*signalMapperMeas;
+  // Removed QSignalMapper declarations - replaced with modern lambda connections
 
   void init_curve();
   void update_curve();

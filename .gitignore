@@ -1,3 +1,5 @@
 build-qt6/*
 build/*
 build-refactor/
+build/
+build-qt6/

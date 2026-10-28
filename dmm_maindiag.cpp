@@ -44,50 +44,52 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent), m_instrument(nullp
   connect(ui.pb_Connect, SIGNAL( clicked() ),
           this, SLOT( slotConnectClicked() ) );
 
-  signalMapperMeas= new QSignalMapper(this);
-  signalMapperMeas->setMapping(ui.pb_Meas,waitformeas);
-  signalMapperMeas->setMapping(ui.pb_MeasCont,cont_meas);
+  // Replaced QSignalMapper with lambda functions for measurement type selection
+  connect(ui.rB_Volt, &QPushButton::clicked, [this]() {
+      setMeasurementType("VOLT");
+  });
+  connect(ui.rB_Ampere, &QPushButton::clicked, [this]() {
+      setMeasurementType("CURR");
+  });
+  connect(ui.rB_Ohm, &QPushButton::clicked, [this]() {
+      setMeasurementType("RESI");
+  });
+  connect(ui.rB_Farad, &QPushButton::clicked, [this]() {
+      setMeasurementType("CAP");
+  });
+  connect(ui.rB_Herz, &QPushButton::clicked, [this]() {
+      setMeasurementType("FREQ");
+  });
 
-  connect(ui.pb_Meas, SIGNAL( clicked() ),signalMapperMeas, SLOT( map() ) );
-  connect(ui.pb_MeasCont, SIGNAL( clicked() ),signalMapperMeas, SLOT( map() ) );
+  // Replaced QSignalMapper with lambda functions for DC/AC selection
+  connect(ui.rb_DC, &QPushButton::clicked, [this]() {
+      setDCAC("DC");
+  });
+  connect(ui.rb_AC, &QPushButton::clicked, [this]() {
+      setDCAC("AC");
+  });
 
-  connect(signalMapperMeas, SIGNAL(mappedInt(int)),this, SLOT(getMeasurement(int)));
+  // Replaced QSignalMapper with lambda functions for resolution selection
+  connect(ui.rb_res_3, &QPushButton::clicked, [this]() {
+      setResolution(3);
+  });
+  connect(ui.rb_res_4, &QPushButton::clicked, [this]() {
+      setResolution(4);
+  });
+  connect(ui.rb_res_5, &QPushButton::clicked, [this]() {
+      setResolution(5);
+  });
+  connect(ui.rb_res_6, &QPushButton::clicked, [this]() {
+      setResolution(6);
+  });
 
-
-  signalMapperMT = new QSignalMapper(this);
-  signalMapperMT->setMapping(ui.rB_Volt, QString("VOLT"));
-  signalMapperMT->setMapping(ui.rB_Ampere, QString("CURR"));
-  signalMapperMT->setMapping(ui.rB_Ohm, QString("RESI"));
-  signalMapperMT->setMapping(ui.rB_Farad, QString("CAP"));
-  signalMapperMT->setMapping(ui.rB_Herz, QString("FREQ"));
-  connect(ui.rB_Volt, SIGNAL(clicked()), signalMapperMT, SLOT (map()));
-  connect(ui.rB_Ampere, SIGNAL(clicked()),signalMapperMT, SLOT (map()));
-  connect(ui.rB_Farad, SIGNAL(clicked()),signalMapperMT, SLOT (map()));
-  connect(ui.rB_Herz, SIGNAL(clicked()), signalMapperMT, SLOT (map()));
-  connect(ui.rB_Ohm, SIGNAL(clicked()),  signalMapperMT, SLOT (map()));
-  connect(signalMapperMT, SIGNAL(mappedString(QString)), this, SLOT(setMeasurementType(QString)));
-
-
-
-  signalMapperDCAC = new QSignalMapper(this);
-  signalMapperDCAC->setMapping(ui.rb_DC, QString("DC"));
-  signalMapperDCAC->setMapping(ui.rb_AC, QString("AC"));
-  connect(ui.rb_DC, SIGNAL(clicked()),signalMapperDCAC, SLOT (map()));
-  connect(ui.rb_AC, SIGNAL(clicked()),signalMapperDCAC, SLOT (map()));
-  connect(signalMapperDCAC, SIGNAL(mappedString(QString)),this, SLOT(setDCAC(QString)));
-
-
-  signalMapperRE = new QSignalMapper(this);
-  signalMapperRE->setMapping(ui.rb_res_3, 3);
-  signalMapperRE->setMapping(ui.rb_res_4, 4);
-  signalMapperRE->setMapping(ui.rb_res_5, 5);
-  signalMapperRE->setMapping(ui.rb_res_6, 6);
-  connect(ui.rb_res_3, SIGNAL(clicked()), signalMapperRE, SLOT (map()));
-  connect(ui.rb_res_4, SIGNAL(clicked()),signalMapperRE, SLOT (map()));
-  connect(ui.rb_res_5, SIGNAL(clicked()),signalMapperRE, SLOT (map()));
-  connect(ui.rb_res_6, SIGNAL(clicked()),signalMapperRE, SLOT (map()));
-  connect(signalMapperRE, SIGNAL(mappedInt(int)),this, SLOT(setResolution(int)));
-
+  // Replaced QSignalMapper with direct connections for measurement actions
+  connect(ui.pb_Meas, &QPushButton::clicked, [this]() {
+      getMeasurement(waitformeas);
+  });
+  connect(ui.pb_MeasCont, &QPushButton::clicked, [this]() {
+      getMeasurement(cont_meas);
+  });
 
   connect(ui.hS_rate, SIGNAL(valueChanged(int)),this,SLOT(updateTimer()));
 
