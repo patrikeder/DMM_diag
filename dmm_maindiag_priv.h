@@ -6,8 +6,9 @@
 #include <QStringList>
 #include "m2550_access.h"
 
-M2550_access *M51_instr = 0;
-QString cp_interface;
-QTimer *diag_timer = 0;
+// Global variables removed - now handled through class members
+// M2550_access *M51_instr = 0;
+// QString cp_interface;
+// QTimer *diag_timer = 0;
 
 #endif

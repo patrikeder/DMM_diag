@@ -6,6 +6,7 @@
 #include <QChart>
 #include <QLineSeries>
 #include <QValueAxis>
+#include "m2550_access.h" // Include the header for M2550_access class
 
 class DMM_MainDiag : public QDialog
 {
@@ -38,7 +39,12 @@ private:
   double y[101];
   double x[101];
   int xpos;
-  int nvalid; // number of samples received so far (max 101)
+  int nvalid; // number of samples received so far (max 101
+
+  // Replaced global variables with class members
+  M2550_access* m_instrument;  // Instrument communication object
+  QString m_interface;         // Serial interface name
+  QTimer* m_timer;             // Timer for measurements
 
 
 private slots:

@@ -5,7 +5,7 @@
 #include <QRegularExpression>
 
 
-DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
+DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent), m_instrument(nullptr), m_timer(nullptr)
 {
   ui.setupUi(this);
 
@@ -13,7 +13,7 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
   foreach (QPushButton *pb, findChildren<QPushButton*>())
     pb->setAutoDefault(false);
 
-  diag_timer = new QTimer();
+  m_timer = new QTimer(this); // Pass 'this' as parent for proper cleanup
   updateTimer();
 
   DMMstate = idle;
@@ -39,7 +39,7 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
 
   ui.lcdRate->display(ui.hS_rate->value());
 
-  cp_interface = ui.te_interface->text();
+  m_interface = ui.te_interface->text();
 
   connect(ui.pb_Connect, SIGNAL( clicked() ),
           this, SLOT( slotConnectClicked() ) );
@@ -96,9 +96,9 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent)
 
   connect(ui.pbDisp,SIGNAL(clicked(bool)),this,SLOT(Disp_off()));
 
-  connect(diag_timer, SIGNAL(timeout()),this,SLOT(timer_task()));
+  connect(m_timer, SIGNAL(timeout()),this,SLOT(timer_task()));
 
-  diag_timer->start();
+  m_timer->start();
   this->show();
 }
 
@@ -128,65 +128,65 @@ void DMM_MainDiag::update_curve(){
 DMM_MainDiag::~DMM_MainDiag()
 {
   // no further measurement requests while shutting down
-  diag_timer->stop();
+  m_timer->stop();
   DMMstate = idle;
-  // null the global first: deleting sends the instrument back to local mode, and its
+  // null the instrument first: deleting sends the instrument back to local mode, and its
   // answer must not reach slots of this half-destroyed dialog
-  M2550_access *instr = M51_instr;
-  M51_instr = 0;
+  M2550_access *instr = m_instrument;
+  m_instrument = 0;
   delete instr;
-  delete diag_timer;
-  diag_timer = 0;
+  delete m_timer;
+  m_timer = 0;
 }
 
 
 void DMM_MainDiag::slotConnectClicked() {
   if (ui.pb_Connect->isChecked())
     {
-      cp_interface = ui.cb_sim->isChecked() ? Serial_Access::SIM_INTERFACE : ui.te_interface->text();
-      if (M51_instr == NULL) {
+      m_interface = ui.cb_sim->isChecked() ? Serial_Access::SIM_INTERFACE : ui.te_interface->text();
+      if (m_instrument == NULL) {
           Instr_init();
         }
       else
         {
-          M51_instr->M2550_connect(cp_interface);
+          m_instrument->M2550_connect(m_interface);
         }
-      if (M51_instr->isConnected()){
-          QObject::connect(M51_instr,SIGNAL(M2550_ack_received()),this,SLOT(updateMSG()));
+      if (m_instrument->isConnected()){
+          QObject::connect(m_instrument,SIGNAL(M2550_ack_received()),this,SLOT(updateMSG()));
 
         }
     }
   else
     {
-      if (M51_instr != NULL) {
-          if (M51_instr->isConnected()) {
-              M51_instr->disconnect();
+      if (m_instrument != NULL) {
+          if (m_instrument->isConnected()) {
+              m_instrument->disconnect();
             }
         }
     }
-  ui.pb_ID->setEnabled(M51_instr->isConnected());
-  ui.pb_Settings->setEnabled(M51_instr->isConnected());
-  ui.pbDisp->setEnabled(M51_instr->isConnected());
+  ui.pb_ID->setEnabled(m_instrument->isConnected());
+  ui.pb_Settings->setEnabled(m_instrument->isConnected());
+  ui.pbDisp->setEnabled(m_instrument->isConnected());
 
-  ui.pb_Meas->setEnabled(M51_instr->isConnected());
-  ui.pb_MeasCont->setEnabled(M51_instr->isConnected());
+  ui.pb_Meas->setEnabled(m_instrument->isConnected());
+  ui.pb_MeasCont->setEnabled(m_instrument->isConnected());
 
-  ui.gB_currty->setEnabled(M51_instr->isConnected());
-  ui.rb_AC->setEnabled(M51_instr->isConnected());
-  ui.rb_DC->setEnabled(M51_instr->isConnected());
+  ui.gB_currty->setEnabled(m_instrument->isConnected());
+  ui.rb_AC->setEnabled(m_instrument->isConnected());
+  ui.rb_DC->setEnabled(m_instrument->isConnected());
 
-  ui.gb_Meas->setEnabled(M51_instr->isConnected());
-  ui.rB_Ampere->setEnabled(M51_instr->isConnected());
-  ui.rB_Farad->setEnabled(M51_instr->isConnected());
-  ui.rB_Herz->setEnabled(M51_instr->isConnected());
-  ui.rB_Ohm->setEnabled(M51_instr->isConnected());
-  ui.rB_Volt->setEnabled(M51_instr->isConnected());
+  ui.gb_Meas->setEnabled(m_instrument->isConnected());
+  ui.rB_Ampere->setEnabled(m_instrument->isConnected());
+  ui.rB_Farad->setEnabled(m_instrument->isConnected());
+  ui.rB_Herz->setEnabled(m_instrument->isConnected());
+  ui.rB_Ohm->setEnabled(m_instrument->isConnected());
+  ui.rB_Volt->setEnabled(m_instrument->isConnected());
 
-  ui.gb_urate->setEnabled(M51_instr->isConnected());
-  ui.hS_rate->setEnabled(M51_instr->isConnected());
+  ui.gb_urate->setEnabled(m_instrument->isConnected());
+  ui.hS_rate->setEnabled(m_instrument->isConnected());
 
   // button and port selection follow the real connection state (also if connecting failed)
-  bool connected = M51_instr->isConnected();
+  bool connected = m_instrument->isConnected();
   ui.pb_Connect->setChecked(connected);
   ui.pb_Connect->setText(connected ? "Disconnect" : "Connect");
   ui.te_interface->setEnabled(!connected);
@@ -195,25 +195,25 @@ void DMM_MainDiag::slotConnectClicked() {
 
 void DMM_MainDiag::updateDBG() {
   // get value
-  if (M51_instr != NULL) {
-      if (M51_instr->sl_dbg_msg_m2550.size()>0) {
-          QString msgs_d = M51_instr->sl_dbg_msg_m2550.join("\n");
+  if (m_instrument != NULL) {
+      if (m_instrument->sl_dbg_msg_m2550.size()>0) {
+          QString msgs_d = m_instrument->sl_dbg_msg_m2550.join("\n");
           ui.te_output_dbg->append(msgs_d);
-          M51_instr->sl_dbg_msg_m2550.clear();
+          m_instrument->sl_dbg_msg_m2550.clear();
         }
-      if (M51_instr->sl_err_msg_m2550.size()>0) {
-          QString msgs_e = M51_instr->sl_err_msg_m2550.join("\n");
+      if (m_instrument->sl_err_msg_m2550.size()>0) {
+          QString msgs_e = m_instrument->sl_err_msg_m2550.join("\n");
           ui.te_output_err->append(msgs_e);
-          M51_instr->sl_err_msg_m2550.clear();
+          m_instrument->sl_err_msg_m2550.clear();
         }
     }
 }
 
 void DMM_MainDiag::updateMSG() {
-  if (M51_instr != NULL) {
-      if (M51_instr->sl_msg_m2550.size()>0) {
-          msg = M51_instr->sl_msg_m2550;
-          M51_instr->sl_msg_m2550.clear();
+  if (m_instrument != NULL) {
+      if (m_instrument->sl_msg_m2550.size()>0) {
+          msg = m_instrument->sl_msg_m2550;
+          m_instrument->sl_msg_m2550.clear();
           // negative relply
           if (msg.contains("NO")){
               ui.te_output_dbg->append("NACK: "+msg);
@@ -351,27 +351,27 @@ void DMM_MainDiag::show_value(const QString &raw, double val){
 }
 
 void DMM_MainDiag::Disp_off(){
-  M51_instr->DisplayOFF();
+  m_instrument->DisplayOFF();
 }
 
 
 void DMM_MainDiag::Instr_init()
 {
-  M51_instr = new M2550_access(cp_interface);
+  m_instrument = new M2550_access(m_interface);
 }
 
 void DMM_MainDiag::getID()
 {
-    M51_instr->getIDN();
+    m_instrument->getIDN();
 }
 
 void DMM_MainDiag::getSettings(){
-    M51_instr->getSettings();
+    m_instrument->getSettings();
 }
 
 void DMM_MainDiag::getMeasurement(int state){
   qDebug()<<"MEAS triggered";
-  M51_instr->getMeasurement();
+  m_instrument->getMeasurement();
   switch (state){
     case cont_meas:
       switch (DMMstate){
@@ -392,7 +392,7 @@ void DMM_MainDiag::getMeasurement(int state){
 }
 
 void DMM_MainDiag::setMeasurementType(QString type){
-  M51_instr->setMeasurement(type);
+  m_instrument->setMeasurement(type);
   curType = type;
   ui.lbl_unit->setText(base_unit());
   init_curve();
@@ -400,27 +400,27 @@ void DMM_MainDiag::setMeasurementType(QString type){
 }
 
 void DMM_MainDiag::setResolution(int res){
-  M51_instr->setResolution(res);
+  m_instrument->setResolution(res);
 }
 
 void DMM_MainDiag::setDCAC(QString DCAC){
-  M51_instr->setDCAC(DCAC);
+  m_instrument->setDCAC(DCAC);
   init_curve();
   update_curve();
 }
 
 void DMM_MainDiag::updateTimer()
 {
-  diag_timer->setInterval(ui.hS_rate->value());
+  m_timer->setInterval(ui.hS_rate->value());
   ui.lcdRate->display(ui.hS_rate->value()); // interval in ms
 }
 
 void DMM_MainDiag::timer_task()
 {
-  if (M51_instr != NULL) {
+  if (m_instrument != NULL) {
       updateDBG();
       if (DMMstate == cont_meas){
-          M51_instr->getMeasurement();
+          m_instrument->getMeasurement();
         }
     }
 }
