@@ -368,7 +368,9 @@ void DMM_MainDiag::getSettings(){
 
 void DMM_MainDiag::getMeasurement(int state){
   qDebug()<<"MEAS triggered";
-  m_instrument->getMeasurement();
+  if (m_instrument != nullptr) {
+    m_instrument->getMeasurement();
+  }
   switch (state){
     case cont_meas:
       switch (DMMstate){
@@ -389,7 +391,9 @@ void DMM_MainDiag::getMeasurement(int state){
 }
 
 void DMM_MainDiag::setMeasurementType(QString type){
-  m_instrument->setMeasurement(type);
+  if (m_instrument != nullptr) {
+    m_instrument->setMeasurement(type);
+  }
   curType = type;
   ui.lbl_unit->setText(base_unit());
   init_curve();
@@ -397,11 +401,15 @@ void DMM_MainDiag::setMeasurementType(QString type){
 }
 
 void DMM_MainDiag::setResolution(int res){
-  m_instrument->setResolution(res);
+  if (m_instrument != nullptr) {
+    m_instrument->setResolution(res);
+  }
 }
 
 void DMM_MainDiag::setDCAC(QString DCAC){
-  m_instrument->setDCAC(DCAC);
+  if (m_instrument != nullptr) {
+    m_instrument->setDCAC(DCAC);
+  }
   init_curve();
   update_curve();
 }
