@@ -33,18 +33,18 @@ private:
 
   void init_curve();
   void update_curve();
-  QChart *chart;
-  QLineSeries *curve1;
-  QValueAxis *axisX, *axisY;
+  std::unique_ptr<QChart> chart;      // Using smart pointer for QChart
+  std::unique_ptr<QLineSeries> curve1; // Using smart pointer for QLineSeries  
+  std::unique_ptr<QValueAxis> axisX, axisY; // Using smart pointers for axes
   double y[101];
   double x[101];
   int xpos;
   int nvalid; // number of samples received so far (max 101
 
   // Replaced global variables with class members
-  M2550_access* m_instrument;  // Instrument communication object
+  M2550_access* m_instrument;  // Instrument communication object - raw pointer as it's a QObject
   QString m_interface;         // Serial interface name
-  QTimer* m_timer;             // Timer for measurements
+  QTimer* m_timer;             // Timer for measurements - already handled properly by Qt parent-child
 
 
 private slots:

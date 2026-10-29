@@ -22,18 +22,18 @@ DMM_MainDiag::DMM_MainDiag(QWidget* parent): QDialog(parent), m_instrument(nullp
 
   init_curve();
 
-  chart = new QChart();
-  curve1 = new QLineSeries();
-  chart->addSeries(curve1);
+  chart = std::make_unique<QChart>();
+  curve1 = std::make_unique<QLineSeries>();
+  chart->addSeries(curve1.get());
   chart->legend()->hide();
-  axisX = new QValueAxis();
-  axisY = new QValueAxis();
+  axisX = std::make_unique<QValueAxis>();
+  axisY = std::make_unique<QValueAxis>();
   axisX->setRange(0, 100);
-  chart->addAxis(axisX, Qt::AlignBottom);
-  chart->addAxis(axisY, Qt::AlignLeft);
-  curve1->attachAxis(axisX);
-  curve1->attachAxis(axisY);
-  ui.chv_ValPlot->setChart(chart);
+  chart->addAxis(axisX.get(), Qt::AlignBottom);
+  chart->addAxis(axisY.get(), Qt::AlignLeft);
+  curve1->attachAxis(axisX.get());
+  curve1->attachAxis(axisY.get());
+  ui.chv_ValPlot->setChart(chart.get());
   ui.chv_ValPlot->setRenderHint(QPainter::Antialiasing);
   update_curve();
 
@@ -132,13 +132,8 @@ DMM_MainDiag::~DMM_MainDiag()
   // no further measurement requests while shutting down
   m_timer->stop();
   DMMstate = idle;
-  // null the instrument first: deleting sends the instrument back to local mode, and its
-  // answer must not reach slots of this half-destroyed dialog
-  M2550_access *instr = m_instrument;
-  m_instrument = 0;
-  delete instr;
-  delete m_timer;
-  m_timer = 0;
+  // Smart pointer will automatically clean up Qt objects
+  // No explicit delete needed for m_instrument as it's a raw pointer with proper cleanup in destructor
 }
 
 
